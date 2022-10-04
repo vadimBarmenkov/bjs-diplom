@@ -10,16 +10,18 @@ logoutButton.action = () => ApiConnector.logout(object => {
         return;
     }
     console.error(object.error);
-    return;
 });
 
-ApiConnector.current(obj => {if(obj.success){ProfileWidget.showProfile(obj.data);};});
+ApiConnector.current(obj => {
+    if(obj.success){
+        ProfileWidget.showProfile(obj.data);
+    }});
 ApiConnector.getFavorites(obj => {
     if(obj.success){
     favoritesWidget.clearTable();
     favoritesWidget.fillTable(obj.data);
     moneyManager.updateUsersList(obj.data);
-};});
+}});
 
 let getStocks = () => ApiConnector.getStocks(obj => {
     if(obj.success){
@@ -35,7 +37,7 @@ moneyManager.addMoneyCallback = data => ApiConnector.addMoney(data, obj => {
         moneyManager.setMessage(true, "баланс успешно пополнен.");
         return;
     }
-    moneyManager.setMessage(false, "ошибка");
+    moneyManager.setMessage(false, obj.error);
 });
 
 moneyManager.conversionMoneyCallback = data => ApiConnector.convertMoney(data, obj => {
@@ -44,7 +46,7 @@ moneyManager.conversionMoneyCallback = data => ApiConnector.convertMoney(data, o
         moneyManager.setMessage(true, "конвертирование прошло успешно.");
         return;
     }
-    moneyManager.setMessage(false, "ошибка");
+    moneyManager.setMessage(false, obj.error);
 });
 
 moneyManager.sendMoneyCallback = data => ApiConnector.transferMoney(data, obj => {
@@ -53,6 +55,27 @@ moneyManager.sendMoneyCallback = data => ApiConnector.transferMoney(data, obj =>
         moneyManager.setMessage(true, "перевод прошел успешно.");
         return;
     }
-    moneyManager.setMessage(false, "ошибка");
+    moneyManager.setMessage(false, obj.error);
 });
 
+favoritesWidget.addUserCallback = data => ApiConnector.addUserToFavorites(data, obj => {
+    if(obj.success){
+        favoritesWidget.clearTable();
+        favoritesWidget.fillTable(obj.data);
+        moneyManager.updateUsersList(obj.data);
+        moneyManager.setMessage(true, "пользователь успешно добавлен.");
+        return;
+    }
+    moneyManager.setMessage(false, obj.error);
+});
+
+favoritesWidget.removeUserCallback = data => ApiConnector.removeUserFromFavorites(data, obj => {
+    if(obj.success){
+        favoritesWidget.clearTable();
+        favoritesWidget.fillTable(obj.data);
+        moneyManager.updateUsersList(obj.data);
+        moneyManager.setMessage(true, "пользователь успешно удален.");
+        return;
+    }
+    moneyManager.setMessage(false, obj.error);
+});
